@@ -1,0 +1,11 @@
+/* ----- 头像默认不转，悬停才旋转 ----- */
+.avatar-img img {
+  animation: none !important;
+  transition: transform 0.3s ease;
+}
+
+.avatar-img img:hover {
+  animation: none !important;
+  transform: rotate(360deg);
+  transition: transform 0.6s ease-in-out;
+}
