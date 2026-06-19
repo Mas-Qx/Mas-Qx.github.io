@@ -1,0 +1,696 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>计算机网络原理（自顶向下方法）学习笔记 | FIREFLY</title><meta name="author" content="Firefly"><meta name="copyright" content="Firefly"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="什么是计算机网络，我们平时的通信是怎么实现的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机网络原理（自顶向下方法）学习笔记">
+<meta property="og:url" content="http://mas-qx.github.io/2026/06/19/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86%EF%BC%88%E8%87%AA%E9%A1%B6%E5%90%91%E4%B8%8B%E6%96%B9%E6%B3%95%EF%BC%89%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="FIREFLY">
+<meta property="og:description" content="什么是计算机网络，我们平时的通信是怎么实现的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://mas-qx.github.io/img/textphoto1.jpg">
+<meta property="article:published_time" content="2026-06-19T07:09:00.000Z">
+<meta property="article:modified_time" content="2026-06-19T07:10:17.008Z">
+<meta property="article:author" content="Firefly">
+<meta property="article:tag" content="密码学,游戏开发,Godot,二次元,编程,技术博客">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://mas-qx.github.io/img/textphoto1.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "计算机网络原理（自顶向下方法）学习笔记",
+  "url": "http://mas-qx.github.io/2026/06/19/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86%EF%BC%88%E8%87%AA%E9%A1%B6%E5%90%91%E4%B8%8B%E6%96%B9%E6%B3%95%EF%BC%89%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/",
+  "image": "http://mas-qx.github.io/img/textphoto1.jpg",
+  "datePublished": "2026-06-19T07:09:00.000Z",
+  "dateModified": "2026-06-19T07:10:17.008Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Firefly",
+      "url": "http://Mas-Qx.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/profile.jpg"><link rel="canonical" href="http://mas-qx.github.io/2026/06/19/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86%EF%BC%88%E8%87%AA%E9%A1%B6%E5%90%91%E4%B8%8B%E6%96%B9%E6%B3%95%EF%BC%89%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '计算机网络原理（自顶向下方法）学习笔记',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/echocbx.css"><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.7.2/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div class="bg-animation" id="web_bg" style="background-image: url(/img/doufou1.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/profile.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">7</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/textphoto1.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/profile.jpg" alt="Logo"><span class="site-name">FIREFLY</span></a><a class="nav-page-title" href="/"><span class="site-name">计算机网络原理（自顶向下方法）学习笔记</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">计算机网络原理（自顶向下方法）学习笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-06-19T07:09:00.000Z" title="发表于 2026-06-19 15:09:00">2026-06-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-06-19T07:10:17.008Z" title="更新于 2026-06-19 15:10:17">2026-06-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E8%BF%AB%E7%9C%9F%EF%BC%89/">学习笔记（迫真）</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="Part-1：计算机网络体系结构"><a href="#Part-1：计算机网络体系结构" class="headerlink" title="Part 1：计算机网络体系结构"></a>Part 1：计算机网络体系结构</h2><h3 id="协议、接口、服务"><a href="#协议、接口、服务" class="headerlink" title="协议、接口、服务"></a>协议、接口、服务</h3><ul>
+<li>协议（Protocal）<br>  : 对等层（peer-to-peer layer）之间通信的规则，是水平的（horizontal）  </li>
+<li>接口（Interface）<br>  ：同一系统内相邻层之间交换信息的连接点，是垂直的（vertical）</li>
+<li>服务（Service）<br>  ：下层为上层提供的功能支持，上层只关心服务，不关心实现细节</li>
+</ul>
+<blockquote>
+<p>这时候可能有人要问了，水平？垂直？这是什么意思，我该怎么去理解这两个定义？</p>
+</blockquote>
+<p>打个比方你就能记住了。</p>
+<p><strong>协议是「水平的」</strong>——想象两个国家的外交官，美国外交官只跟中国外交官说话，他们之间有一套共同的外交礼仪和规则，这就是协议。美国的外交官不会直接跑去跟中国的商务部官员谈外交事务，同样，中国的快递员也不会直接跟美国的CEO谈物流。</p>
+<blockquote>
+<p>所以协议是对等层之间的约定：<strong>第 N 层只管跟对方的第 N 层沟通</strong>，中间隔了多少底层细节它不管。</p>
+</blockquote>
+<p><strong>接口是「垂直的」</strong>——同一台设备内部，上层像&quot;老板&quot;，下层像&quot;员工&quot;。老板把任务通过一个固定的方式交给员工（接口），员工做完后把结果返回。老板只关心&quot;你能不能干这个活&quot;，不关心你具体怎么干的。</p>
+<blockquote>
+<p>所以接口是同一系统内上下层之间的连接点：<strong>上层通过接口调用下层服务，下层通过接口向上层提供服务。</strong></p>
+</blockquote>
+<p>画个图直观理解协议和接口的关系</p>
+<p><img src="/img/Internet/photo1.png" alt="协议和接口关系图"></p>
+<h3 id="分层结构（Layered-Architecture）"><a href="#分层结构（Layered-Architecture）" class="headerlink" title="分层结构（Layered Architecture）"></a>分层结构（Layered Architecture）</h3><ul>
+<li>分层的目的：每层只管自己的事，<strong>上层不需要知道下层的实现细节</strong></li>
+<li>每一层把数据封装（encapsulate）后传给下一层</li>
+</ul>
+<h3 id="ISO-OSIRM模型和TCP-IP模型"><a href="#ISO-OSIRM模型和TCP-IP模型" class="headerlink" title="ISO/OSIRM模型和TCP/IP模型"></a>ISO/OSIRM模型和TCP/IP模型</h3><ul>
+<li>什么是IOS/OISRM模型</li>
+</ul>
+<blockquote>
+<p><strong>ISO/OSIRM</strong> = ISO制定的<strong>OSI参考模型</strong>，也就是平时大家简称的<strong>OSI七层模型</strong><br>那么OSI七层模型具体是怎么实现的呢？  </p>
+</blockquote>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OSI模型分成七个部分，从下往上依次为<strong>物理层（Physical Layer）</strong>,<strong>数据链路层（Data Link Layer）</strong>，<strong>网络层（Internet Layer）</strong>，<strong>传输层（Transport Layer）</strong>，<strong>会话层（Session Layer）</strong> ，<strong>表示层（Presentation Layer）</strong>，<strong>应用层（Application Layer）</strong></p>
+<pre style="background: rgba(255,122,122,0.1); padding: 16px; border-radius: 8px; line-height: 1.8;">
+Layer 7: Application（应用层）
+Layer 6: Presentation（表示层）
+Layer 5: Session（会话层）
+Layer 4: Transport（传输层）
+Layer 3: Network（网络层）
+Layer 2: Data Link（数据链路层）
+Layer 1: Physical（物理层）
+</pre>
+
+<ul>
+<li>什么是TCP/IP模型</li>
+</ul>
+<blockquote>
+<p><strong>TCP/IP模型</strong>就是实际构建了Internet的协议体系结构<br>那么TCP/IP模型具体是怎么实现的呢?  </p>
+</blockquote>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TCP/IP模型分成四个部分，从下往上依次为<strong>网络接口层（Network Interface Layer）</strong>,<strong>网际层（Internet Layer）</strong>，<strong>传输层（Transport Layer）</strong>，<strong>应用层（Application Layer）</strong></p>
+<pre style="background: rgba(255,122,122,0.1); padding: 16px; border-radius: 8px; line-height: 1.8;">
+Layer 4: Application（应用层）
+Layer 3: Transport（传输层）
+Layer 2: Internet（网际层）
+Layer 1: Network Interface（网络接口层）
+</pre>
+
+<blockquote>
+<p>注意：对比接口和服务的概念；我们实际应用的网络是TCP/IP架构的，ISO/OSIRM没有真正部署过。<br>那么，问题出现了，我们实际应用的TCP/IP模型是怎么和IOS/OISRM模型对应起来的呢？<br>下面我将用表格展示这个对应关系</p>
+</blockquote>
+<div align="center">
+
+|      IOS/OISRM模型      |           TCP/IP模型            |
+| :---------------------: | :-----------------------------: |
+|  Application（应用层）  |      Application（应用层）      |
+| Presentation（表示层）  |      Application（应用层）      |
+|    Session（会话层）    |      Application（应用层）      |
+|   Transport（传输层）   |       Transport（传输层）       |
+|    Network（网络层）    |       Internet（网际层）        |
+| Data Link（数据链路层） | Network Interface（网络接口层） |
+|   Physical（物理层）    | Network Interface（网络接口层） |
+
+</div>
+
+<blockquote>
+<p>实质：OSI上面3层 → TCP/IP的最上面1层，OSI下面2层 → TCP/IP的最下面1层</p>
+</blockquote>
+<h3 id="时延、丢包与吞吐量"><a href="#时延、丢包与吞吐量" class="headerlink" title="时延、丢包与吞吐量"></a>时延、丢包与吞吐量</h3><h4 id="时延的四个组成部分"><a href="#时延的四个组成部分" class="headerlink" title="时延的四个组成部分"></a>时延的四个组成部分</h4><div align="center">
+    <pre style="background: rgba(255,122,122,0.1); padding: 16px; border-radius: 8px; line-height: 1.8;">
+Total Delay    = Transmission Delay（发送时延）
+               + Propagation Delay（传播时延）
+               + Processing Delay（处理时延）
+               + Queuing Delay（排队时延）</pre>
+</div>
+
+<hr>
+<ul>
+<li>发送时延（Transmission Delay）<br>  :数据从起点完全进入链路所需的时间<ul>
+<li>数据长度单位：bits</li>
+<li>带宽单位：bps </li>
+<li>结果单位：seconds</li>
+</ul>
+</li>
+</ul>
+<p>公式</p>
+<pre style="background: rgba(255,122,122,0.1); padding: 16px; border-radius: 8px; line-height: 1.8;"> 
+Transmission Delay = Data Length（数据长度） / Bandwidth（带宽）
+</pre>
+
+<blockquote>
+<p>注<br>1 byte = 8 bits，<strong>先把 bytes 转成 bits 再算！</strong><br>bps在转换时为$10^{3}$作为一次进位  </p>
+</blockquote>
+<hr>
+<ul>
+<li>传播时延（Propagation Delay）<br>  :信号在传输介质上从一端跑到另一端所需的时间<ul>
+<li>信道长度单位：meters（米）</li>
+<li>结果单位：seconds </li>
+</ul>
+</li>
+</ul>
+<p>公式</p>
+<pre style="background: rgba(255,122,122,0.1); padding: 16px; border-radius: 8px; line-height: 1.8;"> 
+Propagation Delay = Channel Length（信道长度） / Propagation Speed（传播速度）
+</pre>
+
+
+
+<hr>
+<ul>
+<li>处理时延（Processing Delay）<br>  :路由器或交换机检查数据包头部、决定转发路径等处理花费的时间<ul>
+<li>通常非常小（微秒级）</li>
+<li>在大多数考题中忽略不计</li>
+<li>但如果题目明确给了数值，记得加上</li>
+</ul>
+</li>
+</ul>
+<hr>
+<ul>
+<li>排队时延（Queuing Delay）<br>  :数据包在路由器/交换机的队列中等待被处理的时间<ul>
+<li>不确定值，取决于网络拥塞程度</li>
+<li>流量大 → 排队时间长 → 排队时延大</li>
+<li>流量小 → 排队时间短 → 排队时延趋于 0（或忽略不计）</li>
+<li>大多数考题中如果没特别说明，默认忽略</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h4 id="发送时延-vs-传播时延：核心区别"><a href="#发送时延-vs-传播时延：核心区别" class="headerlink" title="发送时延 vs 传播时延：核心区别"></a>发送时延 vs 传播时延：核心区别</h4><div align="center">
+
+|        | Transmission Delay（发送时延） | Propagation Delay（传播时延） |
+| :----: | :----------------------------: | :---------------------------: |
+| 取决于 |        数据长度 & 带宽         |      信道长度 & 传播速度      |
+| 谁有关 |             发送方             |           链路本身            |
+|  公式  |    $\frac{Data}{Bandwidth}$    |       Distance / Speed        |
+
+</div>
+
+<h4 id="RTT（Round-Trip-Time，往返时延）"><a href="#RTT（Round-Trip-Time，往返时延）" class="headerlink" title="RTT（Round-Trip Time，往返时延）"></a>RTT（Round-Trip Time，往返时延）</h4><ul>
+<li>RTT<br>:从发送方发出数据到收到接收方的确认（ACK） 的总时间</li>
+</ul>
+<pre style="background: rgba(255,122,122,0.1); padding: 16px; border-radius: 8px; line-height: 1.8;">
+发送方 ────────── 数据包 ──────────→ 接收方
+       ←────────── ACK回复 ──────────
+       |←────────── RTT ───────────→|
+</pre>
+
+<p>公式：</p>
+<pre style="background: rgba(255,122,122,0.1); padding: 16px; border-radius: 8px; line-height: 1.8;">
+RTT ≈ Propagation Delay × 2 + Processing Delay × 2 + Queuing Delay × 2
+</pre>
+
+<blockquote>
+<p>RTT 不等于 Propagation Delay × 2！实际还包含处理时延和排队时延。</p>
+</blockquote>
+<h4 id="时延带宽积（Delay-Bandwidth-Product）"><a href="#时延带宽积（Delay-Bandwidth-Product）" class="headerlink" title="时延带宽积（Delay-Bandwidth Product）"></a>时延带宽积（Delay-Bandwidth Product）</h4><ul>
+<li>时延带宽积<br>  :一条链路上最多能容纳多少比特正在传输中<ul>
+<li>单位：bit（不是bps！）</li>
+<li>物理意义：在 sender 收到第一个 ACK 之前，链路上的数据量</li>
+</ul>
+</li>
+</ul>
+<p>公式</p>
+<pre style="background: rgba(255,122,122,0.1); padding: 16px; border-radius: 8px; line-height: 1.8;">
+Delay-Bandwidth Product = Propagation Delay × Bandwidth
+</pre>
+
+<h4 id="常见单位换算"><a href="#常见单位换算" class="headerlink" title="常见单位换算"></a>常见单位换算</h4><div align="center">
+
+|       |     通信领域（bps）      |     存储领域（bytes）      |
+| :---: | :----------------------: | :------------------------: |
+|   K   |    ${10}^{3}$ = 1,000    |     ${2}^{10}$ = 1,024     |
+|   M   |  ${10}^{6}$ = 1,000000   |   ${2}^{20}$ = 1,048,576   |
+|   G   | ${10}^{9}$ = 1,000000000 | ${2}^{30}$ = 1,073,741,824 |
+</div>
+
+<hr>
+<h2 id="Part-2：物理层"><a href="#Part-2：物理层" class="headerlink" title="Part 2：物理层"></a>Part 2：物理层</h2><blockquote>
+<p>这一部分在计算机网络原理考试里不是热门考点，如想深入详细的学习这一层内容，可以选择修通信学科（<del>信我，课绝对不多</del>）</p>
+</blockquote>
+<h3 id="一些基本概念"><a href="#一些基本概念" class="headerlink" title="一些基本概念"></a>一些基本概念</h3><ul>
+<li>信源（Source）<br>  :发送数据的一方，数据的源头</li>
+<li>信宿（Destination）<br>  :接收数据的一方，数据的目的地</li>
+<li><p>信道（Channel）<br>  :信号传输的通路/介质</p>
+<p>  信道可以根据信号的方向分成三类</p>
+</li>
+</ul>
+<div align="center">
+
+|         模式          |               方向               |      Example      |
+| :-------------------: | :------------------------------: | :---------------: |
+|    单工（Simplex）    |          只能一个方向传          | 广播电台 → 收音机 |
+| 半双工（Half-Duplex） | 双方都能发，但同一时间只能一个发 |      对讲机       |
+| 全双工（Full-Duplex） |          双方可以同时发          |      打电话       |
+</div>
+
+<ul>
+<li>信号（Signal）<br>  :数据的电磁/电气表现形式</li>
+</ul>
+<div align="center">
+
+|            模式            |            特点            |  Example   |
+| :------------------------: | :------------------------: | :--------: |
+| 模拟信号（Analog Signal）  |          连续变化          |    声波    |
+| 数字信号（Digital Signal） | 离散信号，只有0和1两个状态 | 计算机信号 |
+</div>
+
+<ul>
+<li><p>带宽（Bandwidth）</p>
+<ul>
+<li>物理层定义：信道能传输信号的频率范围，单位 Hz（赫兹）</li>
+<li>计算机网络通用定义：最高数据传输速率，单位 bps</li>
+</ul>
+</li>
+<li><p>码元（Symbol / Code Element）<br>  :信号的一个基本波形单元</p>
+</li>
+</ul>
+<p>计算公式</p>
+<blockquote>
+<p>$bits = \log_{2}{V}$<br>V为电平级数</p>
+</blockquote>
+<ul>
+<li><p>波特（Baud）与波特率（Baud Rate）<br>  :波特率为每秒传输的码元个数，单位波特</p>
+</li>
+<li><p>速率（Data Rate / Bit Rate）<br>  :比特率，每秒传输的bit数，单位bps</p>
+</li>
+</ul>
+<blockquote>
+<p>Bit Rate = Baud Rate $\times\log_{2}{V}$</p>
+</blockquote>
+<h3 id="两大经典定律"><a href="#两大经典定律" class="headerlink" title="两大经典定律"></a>两大经典定律</h3><div align="center">
+
+|          | 奈奎斯特定理（Nyquist Theorem） |         香农定理（Shannon Theorem）          |
+| :------: | :-----------------------------: | :------------------------------------------: |
+| 适用条件 |    无噪声（Noiseless） 信道     |             有噪声（Noisy） 信道             |
+|   公式   | $Max Data Rate = 2W\log_{2}{V}$ | $Max Data Rate = W\log_{2}{(1+\frac{S}{N})}$ |
+|   单位   |               bps               |                     bps                      |
+</div>
+
+<blockquote>
+<p>W：带宽（Hz）<br>V：信号电平级数（number of signal levels）<br>$\frac{S}{N}$：信噪比（Signal-to-Noise Ratio），比值形式</p>
+</blockquote>
+<p>信噪比（SNR）与分贝（dB）的互相转换</p>
+<blockquote>
+<p>$\frac{S}{N} = 10^{\frac{dB}{10}}$<br>$dB = 10\log_{10}{\frac{S}{N}}$</p>
+</blockquote>
+<h3 id="三种交换方式（Three-Switching-Modes）"><a href="#三种交换方式（Three-Switching-Modes）" class="headerlink" title="三种交换方式（Three Switching Modes）"></a>三种交换方式（Three Switching Modes）</h3><div align="center">
+
+|         |            电路交换（Circuit Swiching）             | 报文交换（Message Switching） |  分组交换（Packet Switching）   |
+| :-----: | :-------------------------------------------------: | :---------------------------: | :-----------------------------: |
+|  过程   | 建立连接 $\longrightarrow$通信$\longrightarrow$释放 | 存储转发（Store-and-forward） | 拆成 packets，store-and-forward |
+|  优点   |                  实时性好，无冲突                   |         线路利用率高          |       延迟性小，灵活性高        |
+|  缺点   |                    线路利用率低                     |    延迟大，不适合实时通信     |        可能有丢包，乱序         |
+| Example |                      老式电话                       |             电报              |            Internet             |
+</div>
+
+<h3 id="数据报（Datagram）和虚电路（Virtual-Circuit）"><a href="#数据报（Datagram）和虚电路（Virtual-Circuit）" class="headerlink" title="数据报（Datagram）和虚电路（Virtual Circuit）"></a>数据报（Datagram）和虚电路（Virtual Circuit）</h3><div align="center">
+
+|            |    数据报（Datagram）    |     虚电路（Virtual Circuit）      |
+| :--------: | :----------------------: | :--------------------------------: |
+|  连接方式  | 无连接（Connectionless） |  面向连接（Connection-oriented）   |
+|    路径    |    每个packet独立选路    | 预先建立路径，所有packet走相同路径 |
+| Router工作 | 每个packet都需要查路由表 |     建立连接后不再需要路由选择     |
+|  到达方式  |      不保证有序到达      |            保证有序到达            |
+|  example   |            IP            |                ATM                 |
+
+</div>
+
+<h3 id="物理层设备（Physical-Layer-Devices）"><a href="#物理层设备（Physical-Layer-Devices）" class="headerlink" title="物理层设备（Physical Layer Devices）"></a>物理层设备（Physical Layer Devices）</h3><div align="center" >
+
+|   设备   |      中继器（Repeater）      |           集线器（Hub）            |
+| :------: | :--------------------------: | :--------------------------------: |
+|   功能   | 信号放大与整形，延长传输距离 |          多端口的Repeater          |
+| 工作层级 |        Physical Layer        |           Physical Layer           |
+|   特点   |        不能分割冲突域        | 构成一个冲突域（Collision Domain） |
+
+</div>
+
+
+
+<hr>
+<h2 id="Part-3：数据链路"><a href="#Part-3：数据链路" class="headerlink" title="Part 3：数据链路"></a>Part 3：数据链路</h2><blockquote>
+<p>『螺旋阶梯』『独角仙』『废墟街道』『无花果塔』『独角仙』『苦伤道』『独角仙』『特异点』『乔托』『天使』『紫阳花』『独角仙』『特异点』『秘密皇帝』『话已至此』『MADE IN HEAVEN』</p>
+</blockquote>
+<h3 id="CRC"><a href="#CRC" class="headerlink" title="CRC"></a>CRC</h3><blockquote>
+<p>不用等，大的要来了</p>
+<p>什么是CRC？</p>
+<ul>
+<li>CRC（Cyclic Redundancy Check，循环冗余校验）<br>  :他的功能是用来检查，发送端传向接收段的数据是否产生了错误，如果有错误，则丢回发送端让发送端重传一个数据。<ul>
+<li>CRC只有检测功能，没有纠错功能</li>
+</ul>
+</li>
+</ul>
+<p>那么，要怎么计算CRC呢？   </p>
+</blockquote>
+<pre style="background: rgba(255,122,122,0.1); padding: 16px; border-radius: 8px; line-height: 1.8;">
+设
+数据 D（要发送的二进制数据）
+生成多项式 G（收发双方约定好的除数），长度 = r+1 bits
+余数 R（FCS，帧检验序列），长度 = r bits
+</pre>
+
+<ul>
+<li>CRC的计算分为三步<ul>
+<li>Step1：补零<blockquote>
+<p>在D后面补r个0，得到$D \times 2^{r}$</p>
+</blockquote>
+</li>
+<li>Step2: 模2除法（也就是XOR）<blockquote>
+<p>用 $D \times 2^{r} \div G$，作模2除法，得到余数R</p>
+</blockquote>
+</li>
+<li>Step3: 拼接发送<blockquote>
+<p>将R拼接在D后面发送，也就是$D + R$</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>说了那么多，那么，到底什么是模2除法呢？<br>我会用最直接、最真相、最不绕弯……后面忘了的方式来讲解</p>
+</blockquote>
+<p><pre style="background: rgba(255,122,122,0.1); padding: 16px; border-radius: 8px; line-height: 1.8;">
+设 D 为 101001，G 为 1101，r = 3（因为G的长度为4）
+</pre></p>
+<ul>
+<li>Step1：补零，得到 101001000</li>
+<li>Step2：模2除法（全程 XOR，不进位不退位）</li>
+</ul>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+  1101 & \overline{) 101001000} \\
+   & \phantom{0}\underline{1101} \\
+   & \phantom{0}01110 \\
+   & \phantom{00}\underline{1101} \\
+   & \phantom{00}001110 \\
+   & \phantom{0000}\underline{1101} \\
+   & \phantom{0000}001100 \\
+   & \phantom{000000}\underline{1101} \\
+   & \phantom{000000}0001 \quad \leftarrow \text{取后r位，余数 } R(也叫FCS) = 001
+\end{array}</script><ul>
+<li>Step3：拼接，发送帧=101001001</li>
+<li>等接收方接收到信号时，接收方只干一件事，用同一个G，对发送帧再次做模2除法<ul>
+<li>显然，正常情况下，余数肯定为0，这个时候就说明传输没有问题。</li>
+<li>但是，如果这个时候计算余数不为0，那么恭喜你，传输出问题了，这个时候就要丢回发送端重新传输</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>诶，这时候有人要问了，主播主播，如果我在传输过程中一不小心，负负得正了怎么办，即便传输错误了但是余数还是0怎么办呢？<br>这就要分类讨论一下了<br>先说结论，所有奇数个错、所有突发长度 $\leq$ r 的 burst error，CRC一定能检测出问题</p>
+</blockquote>
+<ul>
+<li>奇数个错，顾名思义就是我接收端接收到的结果有奇数个位置出错了，那么这个时候CRC一定能检测出问题</li>
+<li>偶数个错，CRC不一定能检测出爆错</li>
+<li>burst error（突发错误）<blockquote>
+<p>指连续一串bit都被传错了，比如010 $\longrightarrow$ 101,这时burst error为3</p>
+<ul>
+<li>$burst error \leq r$ , CRC一定能检测出问题</li>
+<li>$burst error = r+1$ , CRC检测出问题的概率为 $1-\frac{1}{2^{r-1}}$</li>
+<li>$burst error \gt r$ , CRC检测出问题的概率为 $1-\frac{1}{2^{r}}$</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<blockquote>
+<p>关于这个证明因为篇幅太长，这里地方太小，写不下，所以可以移步到<a href="https://mas-qx.github.io/2025/09/22/%E6%AD%A3%E5%BC%8F%E6%B5%8B%E8%AF%95/">关于CRC检测是否出问题的证明</a></p>
+<p><del>我觉得大家来看这篇文章可能都是奔着考试来的</del>，那么说了这么多，让我们看看CRC的常见考点有哪些吧</p>
+</blockquote>
+<div align="center" >
+
+|       考点        |                        说明                        |
+| :---------------: | :------------------------------------------------: |
+|    r 怎么确定     |  r = 生成多项式 G 的最高次数 = G 的 bits 长度 - 1  |
+|     G = 1101      |        最高次是 3，所以 r = 3，FCS = 3 bits        |
+|      模2除法      |              就是 XOR（异或），同0异1              |
+| $G=x^{3}+x^{2}$+1 |                写成二进制就是 1101                 |
+|      FCS长度      |                   固定 = r bits                    |
+|     检错能力      | 所有奇数个错、所有突发长度 $\leq$ r 的 burst error |
+</div>
+
+<h3 id="3-2-无连接传输——UDP"><a href="#3-2-无连接传输——UDP" class="headerlink" title="3.2 无连接传输——UDP"></a>3.2 无连接传输——UDP</h3><ul>
+<li>UDP报文段结构</li>
+<li>UDP校验和</li>
+</ul>
+<h3 id="3-3-可靠数据传输原理"><a href="#3-3-可靠数据传输原理" class="headerlink" title="3.3 可靠数据传输原理"></a>3.3 可靠数据传输原理</h3><ul>
+<li>rdt 1.0 → rdt 2.0 → rdt 3.0</li>
+<li>回退N步（GBN）</li>
+<li>选择重传（SR）</li>
+</ul>
+<h3 id="3-4-面向连接的传输——TCP"><a href="#3-4-面向连接的传输——TCP" class="headerlink" title="3.4 面向连接的传输——TCP"></a>3.4 面向连接的传输——TCP</h3><ul>
+<li>TCP报文段结构</li>
+<li>序号和确认号</li>
+<li>流量控制</li>
+<li>三次握手、四次挥手</li>
+</ul>
+<h3 id="3-5-TCP拥塞控制"><a href="#3-5-TCP拥塞控制" class="headerlink" title="3.5 TCP拥塞控制"></a>3.5 TCP拥塞控制</h3><ul>
+<li>慢启动</li>
+<li>拥塞避免（AIMD）</li>
+<li>快速重传、快速恢复</li>
+</ul>
+<hr>
+<h2 id="Part-4：网络层——数据平面"><a href="#Part-4：网络层——数据平面" class="headerlink" title="Part 4：网络层——数据平面"></a>Part 4：网络层——数据平面</h2><h3 id="4-1-网络层概述"><a href="#4-1-网络层概述" class="headerlink" title="4.1 网络层概述"></a>4.1 网络层概述</h3><ul>
+<li>转发（硬件）vs 路由选择（软件）</li>
+<li>网络层服务模型</li>
+</ul>
+<h3 id="4-2-路由器工作原理"><a href="#4-2-路由器工作原理" class="headerlink" title="4.2 路由器工作原理"></a>4.2 路由器工作原理</h3><ul>
+<li>输入端口、交换结构、输出端口</li>
+<li>交换方式：经内存、经总线、经互联网络</li>
+</ul>
+<h3 id="4-3-IP协议"><a href="#4-3-IP协议" class="headerlink" title="4.3 IP协议"></a>4.3 IP协议</h3><ul>
+<li>IPv4数据报格式</li>
+<li>分片与重组</li>
+<li>IPv4编址：分类编址、CIDR、子网</li>
+<li>DHCP</li>
+<li>NAT</li>
+<li>IPv6</li>
+</ul>
+<h3 id="4-4-路由算法"><a href="#4-4-路由算法" class="headerlink" title="4.4 路由算法"></a>4.4 路由算法</h3><ul>
+<li>链路状态（LS）：Dijkstra算法</li>
+<li>距离向量（DV）：Bellman-Ford算法</li>
+</ul>
+<hr>
+<h2 id="Part-5：网络层——控制平面"><a href="#Part-5：网络层——控制平面" class="headerlink" title="Part 5：网络层——控制平面"></a>Part 5：网络层——控制平面</h2><h3 id="5-1-路由选择协议"><a href="#5-1-路由选择协议" class="headerlink" title="5.1 路由选择协议"></a>5.1 路由选择协议</h3><ul>
+<li>自治系统（AS）</li>
+<li>OSPF（内部网关协议）</li>
+<li>BGP（外部网关协议）</li>
+</ul>
+<h3 id="5-2-SDN——软件定义网络"><a href="#5-2-SDN——软件定义网络" class="headerlink" title="5.2 SDN——软件定义网络"></a>5.2 SDN——软件定义网络</h3><ul>
+<li>控制平面与数据平面分离</li>
+<li>OpenFlow协议</li>
+</ul>
+<hr>
+<h2 id="Part-6：数据链路层"><a href="#Part-6：数据链路层" class="headerlink" title="Part 6：数据链路层"></a>Part 6：数据链路层</h2><h3 id="6-1-链路层服务"><a href="#6-1-链路层服务" class="headerlink" title="6.1 链路层服务"></a>6.1 链路层服务</h3><ul>
+<li>成帧、差错检测、可靠传输、媒体访问控制</li>
+</ul>
+<h3 id="6-2-差错检测与纠正"><a href="#6-2-差错检测与纠正" class="headerlink" title="6.2 差错检测与纠正"></a>6.2 差错检测与纠正</h3><ul>
+<li>奇偶校验</li>
+<li>校验和</li>
+<li>CRC（循环冗余检测）</li>
+</ul>
+<h3 id="6-3-多路访问协议"><a href="#6-3-多路访问协议" class="headerlink" title="6.3 多路访问协议"></a>6.3 多路访问协议</h3><ul>
+<li>信道划分：TDMA、FDMA、CDMA</li>
+<li>随机访问：ALOHA、CSMA、CSMA/CD</li>
+<li>轮流协议：轮询、令牌传递</li>
+</ul>
+<h3 id="6-4-链路层编址"><a href="#6-4-链路层编址" class="headerlink" title="6.4 链路层编址"></a>6.4 链路层编址</h3><ul>
+<li>MAC地址</li>
+<li>ARP协议</li>
+</ul>
+<h3 id="6-5-以太网"><a href="#6-5-以太网" class="headerlink" title="6.5 以太网"></a>6.5 以太网</h3><ul>
+<li>以太网帧结构</li>
+<li>交换机 vs 集线器</li>
+</ul>
+<h3 id="6-6-交换机"><a href="#6-6-交换机" class="headerlink" title="6.6 交换机"></a>6.6 交换机</h3><ul>
+<li>过滤与转发</li>
+<li>自学习</li>
+</ul>
+<h3 id="6-7-无线链路与WiFi"><a href="#6-7-无线链路与WiFi" class="headerlink" title="6.7 无线链路与WiFi"></a>6.7 无线链路与WiFi</h3><ul>
+<li>IEEE 802.11</li>
+<li>CSMA/CA</li>
+</ul>
+<hr>
+<h2 id="Part-7：物理层"><a href="#Part-7：物理层" class="headerlink" title="Part 7：物理层"></a>Part 7：物理层</h2><h3 id="7-1-物理层基本概念"><a href="#7-1-物理层基本概念" class="headerlink" title="7.1 物理层基本概念"></a>7.1 物理层基本概念</h3><ul>
+<li>信号、码元、比特率、波特率</li>
+<li>奈奎斯特定理、香农定理</li>
+</ul>
+<h3 id="7-2-传输介质"><a href="#7-2-传输介质" class="headerlink" title="7.2 传输介质"></a>7.2 传输介质</h3><ul>
+<li>导向介质：双绞线、同轴电缆、光纤</li>
+<li>非导向介质：无线电波、微波</li>
+</ul>
+<hr>
+<h2 id="Part-8：网络安全（深化）"><a href="#Part-8：网络安全（深化）" class="headerlink" title="Part 8：网络安全（深化）"></a>Part 8：网络安全（深化）</h2><h3 id="8-1-密码学"><a href="#8-1-密码学" class="headerlink" title="8.1 密码学"></a>8.1 密码学</h3><ul>
+<li>对称密钥：DES、AES</li>
+<li>公钥加密：RSA</li>
+</ul>
+<h3 id="8-2-安全协议"><a href="#8-2-安全协议" class="headerlink" title="8.2 安全协议"></a>8.2 安全协议</h3><ul>
+<li>SSL/TLS</li>
+<li>IPsec</li>
+<li>防火墙</li>
+</ul>
+<hr>
+<blockquote>
+<p>📝 <strong>持续更新中……</strong></p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://Mas-Qx.github.io">Firefly</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://mas-qx.github.io/2026/06/19/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86%EF%BC%88%E8%87%AA%E9%A1%B6%E5%90%91%E4%B8%8B%E6%96%B9%E6%B3%95%EF%BC%89%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">http://mas-qx.github.io/2026/06/19/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86%EF%BC%88%E8%87%AA%E9%A1%B6%E5%90%91%E4%B8%8B%E6%96%B9%E6%B3%95%EF%BC%89%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://Mas-Qx.github.io" target="_blank">FIREFLY</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/textphoto1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/06/19/%E6%AD%A3%E5%BC%8F%E6%B5%8B%E8%AF%95/" title="关于CRC检测是否出问题的证明"><img class="cover" src="/img/doufou1.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">关于CRC检测是否出问题的证明</div></div><div class="info-2"><div class="info-item-1">关于CRC检测是否出问题的证明</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/profile.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Firefly</div><div class="author-info-description">✨Cryptarithm<br> 四次元跳躍機関</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">7</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Mas-Qx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Mas-Qx" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:firefly@example.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">🌸 欢迎来到 Firefly 的小世界～<br>🚀 在写一些乱七八糟的文章<br>🎮 正在用 Godot 开发游戏ing</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-1%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">Part 1：计算机网络体系结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8F%E8%AE%AE%E3%80%81%E6%8E%A5%E5%8F%A3%E3%80%81%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.1.</span> <span class="toc-text">协议、接口、服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E5%B1%82%E7%BB%93%E6%9E%84%EF%BC%88Layered-Architecture%EF%BC%89"><span class="toc-number">1.2.</span> <span class="toc-text">分层结构（Layered Architecture）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ISO-OSIRM%E6%A8%A1%E5%9E%8B%E5%92%8CTCP-IP%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.3.</span> <span class="toc-text">ISO&#x2F;OSIRM模型和TCP&#x2F;IP模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%B6%E5%BB%B6%E3%80%81%E4%B8%A2%E5%8C%85%E4%B8%8E%E5%90%9E%E5%90%90%E9%87%8F"><span class="toc-number">1.4.</span> <span class="toc-text">时延、丢包与吞吐量</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E5%BB%B6%E7%9A%84%E5%9B%9B%E4%B8%AA%E7%BB%84%E6%88%90%E9%83%A8%E5%88%86"><span class="toc-number">1.4.1.</span> <span class="toc-text">时延的四个组成部分</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%91%E9%80%81%E6%97%B6%E5%BB%B6-vs-%E4%BC%A0%E6%92%AD%E6%97%B6%E5%BB%B6%EF%BC%9A%E6%A0%B8%E5%BF%83%E5%8C%BA%E5%88%AB"><span class="toc-number">1.4.2.</span> <span class="toc-text">发送时延 vs 传播时延：核心区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#RTT%EF%BC%88Round-Trip-Time%EF%BC%8C%E5%BE%80%E8%BF%94%E6%97%B6%E5%BB%B6%EF%BC%89"><span class="toc-number">1.4.3.</span> <span class="toc-text">RTT（Round-Trip Time，往返时延）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E5%BB%B6%E5%B8%A6%E5%AE%BD%E7%A7%AF%EF%BC%88Delay-Bandwidth-Product%EF%BC%89"><span class="toc-number">1.4.4.</span> <span class="toc-text">时延带宽积（Delay-Bandwidth Product）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E5%8D%95%E4%BD%8D%E6%8D%A2%E7%AE%97"><span class="toc-number">1.4.5.</span> <span class="toc-text">常见单位换算</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-2%EF%BC%9A%E7%89%A9%E7%90%86%E5%B1%82"><span class="toc-number">2.</span> <span class="toc-text">Part 2：物理层</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">2.1.</span> <span class="toc-text">一些基本概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%A4%E5%A4%A7%E7%BB%8F%E5%85%B8%E5%AE%9A%E5%BE%8B"><span class="toc-number">2.2.</span> <span class="toc-text">两大经典定律</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E4%BA%A4%E6%8D%A2%E6%96%B9%E5%BC%8F%EF%BC%88Three-Switching-Modes%EF%BC%89"><span class="toc-number">2.3.</span> <span class="toc-text">三种交换方式（Three Switching Modes）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%8A%A5%EF%BC%88Datagram%EF%BC%89%E5%92%8C%E8%99%9A%E7%94%B5%E8%B7%AF%EF%BC%88Virtual-Circuit%EF%BC%89"><span class="toc-number">2.4.</span> <span class="toc-text">数据报（Datagram）和虚电路（Virtual Circuit）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%A9%E7%90%86%E5%B1%82%E8%AE%BE%E5%A4%87%EF%BC%88Physical-Layer-Devices%EF%BC%89"><span class="toc-number">2.5.</span> <span class="toc-text">物理层设备（Physical Layer Devices）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-3%EF%BC%9A%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF"><span class="toc-number">3.</span> <span class="toc-text">Part 3：数据链路</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CRC"><span class="toc-number">3.1.</span> <span class="toc-text">CRC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%97%A0%E8%BF%9E%E6%8E%A5%E4%BC%A0%E8%BE%93%E2%80%94%E2%80%94UDP"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 无连接传输——UDP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%8F%AF%E9%9D%A0%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E5%8E%9F%E7%90%86"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 可靠数据传输原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E9%9D%A2%E5%90%91%E8%BF%9E%E6%8E%A5%E7%9A%84%E4%BC%A0%E8%BE%93%E2%80%94%E2%80%94TCP"><span class="toc-number">3.4.</span> <span class="toc-text">3.4 面向连接的传输——TCP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-TCP%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6"><span class="toc-number">3.5.</span> <span class="toc-text">3.5 TCP拥塞控制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-4%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%B1%82%E2%80%94%E2%80%94%E6%95%B0%E6%8D%AE%E5%B9%B3%E9%9D%A2"><span class="toc-number">4.</span> <span class="toc-text">Part 4：网络层——数据平面</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E7%BD%91%E7%BB%9C%E5%B1%82%E6%A6%82%E8%BF%B0"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 网络层概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E8%B7%AF%E7%94%B1%E5%99%A8%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 路由器工作原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-IP%E5%8D%8F%E8%AE%AE"><span class="toc-number">4.3.</span> <span class="toc-text">4.3 IP协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95"><span class="toc-number">4.4.</span> <span class="toc-text">4.4 路由算法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-5%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%B1%82%E2%80%94%E2%80%94%E6%8E%A7%E5%88%B6%E5%B9%B3%E9%9D%A2"><span class="toc-number">5.</span> <span class="toc-text">Part 5：网络层——控制平面</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E8%B7%AF%E7%94%B1%E9%80%89%E6%8B%A9%E5%8D%8F%E8%AE%AE"><span class="toc-number">5.1.</span> <span class="toc-text">5.1 路由选择协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-SDN%E2%80%94%E2%80%94%E8%BD%AF%E4%BB%B6%E5%AE%9A%E4%B9%89%E7%BD%91%E7%BB%9C"><span class="toc-number">5.2.</span> <span class="toc-text">5.2 SDN——软件定义网络</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-6%EF%BC%9A%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82"><span class="toc-number">6.</span> <span class="toc-text">Part 6：数据链路层</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E9%93%BE%E8%B7%AF%E5%B1%82%E6%9C%8D%E5%8A%A1"><span class="toc-number">6.1.</span> <span class="toc-text">6.1 链路层服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E5%B7%AE%E9%94%99%E6%A3%80%E6%B5%8B%E4%B8%8E%E7%BA%A0%E6%AD%A3"><span class="toc-number">6.2.</span> <span class="toc-text">6.2 差错检测与纠正</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E5%A4%9A%E8%B7%AF%E8%AE%BF%E9%97%AE%E5%8D%8F%E8%AE%AE"><span class="toc-number">6.3.</span> <span class="toc-text">6.3 多路访问协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-%E9%93%BE%E8%B7%AF%E5%B1%82%E7%BC%96%E5%9D%80"><span class="toc-number">6.4.</span> <span class="toc-text">6.4 链路层编址</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-5-%E4%BB%A5%E5%A4%AA%E7%BD%91"><span class="toc-number">6.5.</span> <span class="toc-text">6.5 以太网</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-6-%E4%BA%A4%E6%8D%A2%E6%9C%BA"><span class="toc-number">6.6.</span> <span class="toc-text">6.6 交换机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-7-%E6%97%A0%E7%BA%BF%E9%93%BE%E8%B7%AF%E4%B8%8EWiFi"><span class="toc-number">6.7.</span> <span class="toc-text">6.7 无线链路与WiFi</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-7%EF%BC%9A%E7%89%A9%E7%90%86%E5%B1%82"><span class="toc-number">7.</span> <span class="toc-text">Part 7：物理层</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E7%89%A9%E7%90%86%E5%B1%82%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">7.1.</span> <span class="toc-text">7.1 物理层基本概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E4%BC%A0%E8%BE%93%E4%BB%8B%E8%B4%A8"><span class="toc-number">7.2.</span> <span class="toc-text">7.2 传输介质</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Part-8%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%EF%BC%88%E6%B7%B1%E5%8C%96%EF%BC%89"><span class="toc-number">8.</span> <span class="toc-text">Part 8：网络安全（深化）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E5%AF%86%E7%A0%81%E5%AD%A6"><span class="toc-number">8.1.</span> <span class="toc-text">8.1 密码学</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE"><span class="toc-number">8.2.</span> <span class="toc-text">8.2 安全协议</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/06/19/%E6%AD%A3%E5%BC%8F%E6%B5%8B%E8%AF%95/" title="关于CRC检测是否出问题的证明"><img src="/img/doufou1.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="关于CRC检测是否出问题的证明"/></a><div class="content"><a class="title" href="/2026/06/19/%E6%AD%A3%E5%BC%8F%E6%B5%8B%E8%AF%95/" title="关于CRC检测是否出问题的证明">关于CRC检测是否出问题的证明</a><time datetime="2026-06-19T07:09:00.000Z" title="发表于 2026-06-19 15:09:00">2026-06-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/19/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86%EF%BC%88%E8%87%AA%E9%A1%B6%E5%90%91%E4%B8%8B%E6%96%B9%E6%B3%95%EF%BC%89%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="计算机网络原理（自顶向下方法）学习笔记"><img src="/img/textphoto1.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="计算机网络原理（自顶向下方法）学习笔记"/></a><div class="content"><a class="title" href="/2026/06/19/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86%EF%BC%88%E8%87%AA%E9%A1%B6%E5%90%91%E4%B8%8B%E6%96%B9%E6%B3%95%EF%BC%89%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="计算机网络原理（自顶向下方法）学习笔记">计算机网络原理（自顶向下方法）学习笔记</a><time datetime="2026-06-19T07:09:00.000Z" title="发表于 2026-06-19 15:09:00">2026-06-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/17/Markdown%E8%AF%AD%E6%B3%95%E5%A4%A7%E5%85%A8/" title="Markdown 语法大全"><img src="/img/textphoto2.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Markdown 语法大全"/></a><div class="content"><a class="title" href="/2026/06/17/Markdown%E8%AF%AD%E6%B3%95%E5%A4%A7%E5%85%A8/" title="Markdown 语法大全">Markdown 语法大全</a><time datetime="2026-06-17T12:00:00.000Z" title="发表于 2026-06-17 20:00:00">2026-06-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/17/%E5%AF%B9%E4%B8%8D%E8%B5%B7%EF%BC%8C%E6%88%91%E6%98%AF%E6%B4%BB%E5%9C%A8%E4%BA%8C%E6%AC%A1%E5%85%83%E7%9A%84%E5%A5%B3%E5%AD%A9/" title="对不起，因为我是活在二次元的女孩"><img src="/img/Fangxing.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="对不起，因为我是活在二次元的女孩"/></a><div class="content"><a class="title" href="/2026/06/17/%E5%AF%B9%E4%B8%8D%E8%B5%B7%EF%BC%8C%E6%88%91%E6%98%AF%E6%B4%BB%E5%9C%A8%E4%BA%8C%E6%AC%A1%E5%85%83%E7%9A%84%E5%A5%B3%E5%AD%A9/" title="对不起，因为我是活在二次元的女孩">对不起，因为我是活在二次元的女孩</a><time datetime="2026-06-17T11:04:00.000Z" title="发表于 2026-06-17 19:04:00">2026-06-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/06/16/%E6%AD%A3%E5%BC%8F%E6%B5%8B%E8%AF%952/" title="正式测试2"><img src="/img/mzk1.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="正式测试2"/></a><div class="content"><a class="title" href="/2026/06/16/%E6%AD%A3%E5%BC%8F%E6%B5%8B%E8%AF%952/" title="正式测试2">正式测试2</a><time datetime="2026-06-16T13:44:31.317Z" title="发表于 2026-06-16 21:44:31">2026-06-16</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/doufou1.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Firefly</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.5</a></span></div><div class="footer_custom_text"><i class="fas fa-heart" style="color:#ff7a7a"></i> 三三说Master最棒啦～</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(async () => {
+  const showKatex = () => {
+    document.querySelectorAll('#article-container .katex').forEach(el => el.classList.add('katex-show'))
+  }
+
+  if (!window.katex_js_css) {
+    window.katex_js_css = true
+    await btf.getCSS('https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css')
+    if (false) {
+      await btf.getScript('https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js')
+    }
+  }
+
+  showKatex()
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script><script>document.addEventListener('DOMContentLoaded',function(){try{katex}catch(e){return};var c=document.getElementById('article-container');if(!c)return;c.querySelectorAll('script[type="math/tex"]').forEach(function(el){try{var span=document.createElement('span');span.innerHTML=katex.renderToString(el.textContent,{displayMode:false,throwOnError:false});el.parentNode.replaceChild(span,el)}catch(e){}});c.querySelectorAll('script[type="math/tex; mode=display"]').forEach(function(el){try{var span=document.createElement('span');span.innerHTML=katex.renderToString(el.textContent,{displayMode:true,throwOnError:false});el.parentNode.replaceChild(span,el)}catch(e){}});var t=[];function walk(n){if(n.nodeType===3&&n.textContent.indexOf('$')>=0)t.push(n);else if(n.nodeType===1&&!/^(script|style|code|pre)$/i.test(n.tagName))n.childNodes.forEach(walk)}walk(c);t.forEach(function(n){var p=n.parentNode;if(!p||p.closest&&p.closest('.katex'))return;var html=n.textContent;var changed=false;html=html.replace(/\$\$(.+?)\$\$/gs,function(_,m){changed=true;try{return katex.renderToString(m.trim(),{displayMode:true,throwOnError:false})}catch(e){return'$$'+m+'$$'}});html=html.replace(/\$(.+?)\$/gs,function(_,m){changed=true;try{if(m.indexOf('<')>=0)return'$'+m+'$';return katex.renderToString(m.trim(),{displayMode:false,throwOnError:false})}catch(e){return'$'+m+'$'}});if(changed){var s=document.createElement('span');s.innerHTML=html;p.replaceChild(s,n)}})})</script><script>(function(){var sub=["✨ 欢迎来到幻想乡","我的酷爱——《the EmpErroR》","我提车了——IT boy","w5和生日哪个先到——竹绫筕","你指尖闪烁的电光，是我此生不变的信仰——《某科学的超电磁炮》","天苍苍，野茫茫，风吹草低现牛羊，争渡争渡惊起一滩鸥鹭——《PANDORA PARADOXXX》","真相只有一个！——《名侦探柯南》"];function shuffle(arr){for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=arr[i];arr[i]=arr[j];arr[j]=tmp}return arr}var origInit=typedJSFn.init;typedJSFn.init=function(str){origInit(shuffle(str.slice()))}})();</script><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script id="canvas_nest" defer="defer" color="255,122,122" opacity="0.5" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
